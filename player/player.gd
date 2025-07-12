@@ -95,7 +95,7 @@ func _input(event):
 		head.rotation.x = clamp(head.rotation.x,deg_to_rad(-89),deg_to_rad(89))
 	
 	if is_flashlight_present:
-		if Input.is_action_pressed(flashlight_action):
+		if Input.is_action_just_pressed(flashlight_action):
 			toggle_flashlight()
 
 func _process(delta):
