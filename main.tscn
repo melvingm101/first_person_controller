@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://diqqynli7wtt7"]
 
 [ext_resource type="Texture2D" uid="uid://c88t6nhmyymr3" path="res://assets/texture_05.png" id="1_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://c6v7rvd3cgufp" path="res://prefabs/player.tscn" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://c6v7rvd3cgufp" path="res://player/player.tscn" id="1_ig7tw"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_7dm0k"]
 sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
@@ -11,7 +11,7 @@ ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
 sky_material = SubResource("ProceduralSkyMaterial_7dm0k")
 
 [sub_resource type="Environment" id="Environment_0xm2m"]
-background_mode = 2
+background_mode = 1
 sky = SubResource("Sky_ig7tw")
 tonemap_mode = 2
 glow_enabled = true
@@ -24,6 +24,7 @@ uv1_scale = Vector3(20, 20, 20)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+visible = false
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
@@ -41,6 +42,12 @@ material_override = SubResource("StandardMaterial3D_h2yge")
 use_collision = true
 size = Vector3(17.6349, 0.5, 50)
 
+[node name="floor3" type="CSGBox3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, -1, -1, 2.98023e-08, 4.37114e-08, 2.98023e-08, 1, -1.77636e-15, -11.0793, 2.15776, -8)
+material_override = SubResource("StandardMaterial3D_h2yge")
+use_collision = true
+size = Vector3(17.6349, 0.5, 50)
+
 [node name="player" parent="." instance=ExtResource("1_ig7tw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.798583, 0)
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0.798583, 0)
 is_jumping_allowed = true

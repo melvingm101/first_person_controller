@@ -5,6 +5,7 @@ extends CharacterBody3D
 @onready var crouching_collision_shape = $crouching_collision_shape
 @onready var raycast = $raycast
 @onready var eyes = $head/eyes
+@onready var camera = $head/eyes/camera
 
 # The current speed of the character
 var current_speed = 5.0
@@ -24,6 +25,8 @@ var crouching_depth = -0.5
 @export var crouching_speed = 3.0
 @export var height = 1.8
 @export var is_jumping_allowed = false
+@export var is_flashlight_present = false
+
 
 # Variables below are for the actions in the Input Maps
 @export var jump_action = "jump"
@@ -33,6 +36,9 @@ var crouching_depth = -0.5
 @export var right_action = "right"
 @export var sprinting_action = "sprint"
 @export var crouching_action = "crouch"
+@export var flashlight_action = "flashlight"
+@export var flashlight = SpotLight3D.new()
+@export var flashlight_switch = AudioStreamPlayer3D.new()
 
 # Variables for head bobbing
 const HEAD_BOBBING_SPRINTING_SPEED = 22.0
@@ -47,17 +53,33 @@ var head_bobbing_vector = Vector2.ZERO
 var head_bobbing_index = 0.0
 var head_bobbing_current_intensity = 0.0
 
+# Flashlight movement smooth
+var flashlight_rotation_smoothness = 15.0
+var flashlight_position_smoothness = 20.0
+
 # State
 var is_running = false
 var is_walking = false
 
-func adjust_head_bobbing(bobbing_intensity, bobbing_speed, delta):
+# Ensure smooth transition of flashlight
+func update_flashlight(delta: float) -> void:
+	flashlight.global_transform = Transform3D(
+		flashlight.global_transform.basis.slerp(camera.global_transform.basis, delta * flashlight_rotation_smoothness),
+		flashlight.global_transform.origin.slerp(camera.global_transform.origin, delta * flashlight_position_smoothness),
+	).orthonormalized()
+
+func adjust_head_bobbing(bobbing_intensity, bobbing_speed, delta) -> void:
 	head_bobbing_current_intensity = bobbing_intensity
 	head_bobbing_index += bobbing_speed * delta
 
 func set_states(running_state, walking_state):
 	is_running = running_state
 	is_walking = walking_state
+
+func toggle_flashlight():
+	# Check if flashlight is enabled, and check if flashlight action is pressed
+	flashlight.visible = not flashlight.visible
+	flashlight_switch.play()
 
 func _ready():
 	# Ensure that the mouse is hidden when playing
@@ -71,6 +93,13 @@ func _input(event):
 		
 		# To ensure that the head doesn't rotate all the way around
 		head.rotation.x = clamp(head.rotation.x,deg_to_rad(-89),deg_to_rad(89))
+	
+	if is_flashlight_present:
+		if Input.is_action_pressed(flashlight_action):
+			toggle_flashlight()
+
+func _process(delta):
+	update_flashlight(delta)
 
 func _physics_process(delta):
 	# If crouch action is pressed, then the player crouches, otherwise checks if the player is running/walking
